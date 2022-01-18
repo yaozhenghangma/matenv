@@ -1,5 +1,6 @@
 import ase
 import numpy as np
+import copy
 
 def BandDirection(positions, lattice):
     positions_atom1 = positions[0:2, :]
@@ -41,7 +42,7 @@ def FindTransformedXYZ(directions):
         xyz[2,:] = xyz[2,:]/np.linalg.norm(xyz[2,:])
         xyz[1,:] = xyz[1,:] - np.dot(xyz[2,:], xyz[1,:])*xyz[2,:]
         xyz[1,:] = xyz[1,:]/np.linalg.norm(xyz[1,:])
-        xyz[0,:] = xyz[0,:] - np.dot(xyz[2,:], xyz[0,:])*xyz[0,:] - np.dot(xyz[1,:], xyz[0,:])*xyz[1,:]
+        xyz[0,:] = xyz[0,:] - np.dot(xyz[2,:], xyz[0,:])*xyz[2,:] - np.dot(xyz[1,:], xyz[0,:])*xyz[1,:]
         xyz[0,:] = xyz[0,:]/np.linalg.norm(xyz[0,:])
         list.append(xyz)
     return list
@@ -64,5 +65,5 @@ def Rotate(cell):
         positions = rotational_invariant_positions.dot(new_lattice)
         cell.set_positions(positions)
         cell.cell[:] = new_lattice
-        cell_list.append(cell)
+        cell_list.append(copy.deepcopy(cell))
     return cell_list
