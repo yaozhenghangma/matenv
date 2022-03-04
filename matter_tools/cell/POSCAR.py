@@ -72,7 +72,3 @@ def write_POSCAR(file_name, cell, comment="output_structure"):
             number += 1
     poscar_out.close()
     return None
-
-if __name__ == "__main__":
-    cell = read_POSCAR("POSCAR")
-    write_POSCAR("output.vasp", cell)
