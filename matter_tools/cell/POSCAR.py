@@ -52,7 +52,7 @@ def read_POSCAR(file_name):
 def write_POSCAR(file_name, cell, comment="output_structure"):
     poscar_out = open(file_name, 'w')
     poscar_out.write(comment + "\n")
-    poscar_out.write("1.0")
+    poscar_out.write("1.0\n")
     for i in range(0, 3):
         poscar_out.write(" %.5f\t" % cell.lattice.lattice[i, 0])
         poscar_out.write(" %.5f\t" % cell.lattice.lattice[i, 1])
