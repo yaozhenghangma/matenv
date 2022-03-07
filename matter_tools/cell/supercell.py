@@ -91,3 +91,30 @@ def slice(cell, miller_index=np.ones(3)):
         atom.direct_coordinate = atom.direct_coordinate - np.floor(atom.direct_coordinate)
         atom.Certesian_coordinate = atom.direct_coordinate @ cell.lattice.lattice
     return cell
+
+
+def shift(cell, shift=0):
+    shift_vector = atom.lattice.c * shift
+    reciprocal_lattice = np.linalg.inv(atom.lattice.lattice)
+    for atom in cell.atoms:
+        atom.Certesian_coordinate = atom.Certesian_coordinate - shift_vector
+        atom.direct_coordinate = atom.Certesian_coordinate @ reciprocal_lattice
+    return cell
+
+
+def add_vaccum(cell, vaccum=0):
+    vaccum_vector = cell.lattice.c * vaccum
+    cell.lattice.lattice[2, 0:3] = cell.lattice.lattice[2, 0:3] + vaccum_vector
+    cell.lattice.c = cell.lattice.lattice[2, 0:3]
+    reciprocal_lattice = np.linalg.inv(atom.lattice.lattice)
+    for atom in cell.atoms:
+        atom.direct_coordinate = atom.Certesian_coordinate @ reciprocal_lattice
+    return cell
+
+
+def slap(cell, miller_index=np.ones(3), layer=1, shift=0, vaccum=0):
+    cell = slice(cell, miller_index)
+    cell = enlarge(cell, np.array([1, 1, layer]))
+    cell = shift(cell, shift)
+    cell = add_vaccum(cell, vaccum)
+    return cell
