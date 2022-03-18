@@ -63,12 +63,12 @@ def write_POSCAR(file_name, cell, comment="output_structure"):
     for i in range(0, len(cell.symbols)):
         poscar_out.write("%d " % cell.numbers[i])
     poscar_out.write("\nDirect\n")
-    number = 0
     for i in range(0, len(cell.symbols)):
-        for j in range(0, cell.numbers[i]):
-            poscar_out.write(" %.5f\t" % cell.atoms[number].direct_coordinate[0, 0])
-            poscar_out.write(" %.5f\t" % cell.atoms[number].direct_coordinate[0, 1])
-            poscar_out.write(" %.5f\n" % cell.atoms[number].direct_coordinate[0, 2])
-            number += 1
+        for atom in cell.atoms:
+            if atom.symbol == cell.symbols[i]:
+                poscar_out.write(" %.5f\t" % atom.direct_coordinate[0, 0])
+                poscar_out.write(" %.5f\t" % atom.direct_coordinate[0, 1])
+                poscar_out.write(" %.5f\n" % atom.direct_coordinate[0, 2])
+
     poscar_out.close()
     return None

@@ -1,10 +1,11 @@
-import ase
 import numpy as np
 import copy
+from atom import *
 
-def BandDirection(positions, lattice):
-    positions_atom1 = positions[0:2, :]
-    positions_atom2 = positions[2:, :]
+
+def BandDirection(positions, lattice, legand=6):
+    positions_atom1 = positions[0]
+    positions_atom2 = positions[1]
     atom1_number = positions_atom1.shape[0]
     atom2_number = positions_atom2.shape[0]
     list = []
@@ -21,7 +22,7 @@ def BandDirection(positions, lattice):
             temp_list.append((positions_atom2[j]-positions_atom1[i]-lattice[2,:], np.linalg.norm(positions_atom2[j]-positions_atom1[i]-lattice[2,:])))
             directions.append(min(temp_list, key=lambda x: x[1]))
         directions.sort(key=lambda x: x[1])
-        directions = directions[0:6]
+        directions = directions[0:legand]
         list.append(directions)
     return list
 

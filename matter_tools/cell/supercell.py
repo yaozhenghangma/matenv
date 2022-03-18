@@ -17,15 +17,17 @@ def enlarge(cell, n=np.ones(3)):
         atom.direct_coordinate = atom.Certesian_coordinate @ inverse_lattice
 
     atoms_add = []
+    all_atoms = []
     for i in range(0, n[0]):
         for j in range(0, n[1]):
             for k in range(0, n[2]):
                 for atom in cell.atoms:
                     new_atom = copy.deepcopy(atom)
-                    new_atom.Certesian_coordinate = new_atom.Certesian_coordinate + np.diag([i, j, k]) @ original_lattice
-                    new_atom.direct_coordinate = atom.Certesian_coordinate @ inverse_lattice
+                    new_atom.Certesian_coordinate = new_atom.Certesian_coordinate + np.array([[i, j, k]]) @ original_lattice
+                    new_atom.direct_coordinate = new_atom.Certesian_coordinate @ inverse_lattice
                     atoms_add.append(copy.deepcopy(new_atom))
-    cell.atoms = cell.atoms + atoms_add
+    all_atoms = all_atoms + atoms_add
+    cell.atoms = all_atoms
 
     N = n[0]*n[1]*n[2]
     for i in range(0, len(cell.numbers)):
@@ -93,28 +95,37 @@ def slice(cell, miller_index=np.ones(3)):
     return cell
 
 
-def shift(cell, shift=0):
-    shift_vector = atom.lattice.c * shift
-    reciprocal_lattice = np.linalg.inv(atom.lattice.lattice)
+def add_shift(cell, shift=0):
+    shift_vector = cell.lattice.c * shift
+    reciprocal_lattice = np.linalg.inv(cell.lattice.lattice)
     for atom in cell.atoms:
         atom.Certesian_coordinate = atom.Certesian_coordinate - shift_vector
         atom.direct_coordinate = atom.Certesian_coordinate @ reciprocal_lattice
     return cell
 
 
-def add_vaccum(cell, vaccum=0):
-    vaccum_vector = cell.lattice.c * vaccum
-    cell.lattice.lattice[2, 0:3] = cell.lattice.lattice[2, 0:3] + vaccum_vector
+def add_vacuum(cell, vacuum=0):
+    vacuum_vector = cell.lattice.c * vacuum
+    cell.lattice.lattice[2, 0:3] = cell.lattice.lattice[2, 0:3] + vacuum_vector
     cell.lattice.c = cell.lattice.lattice[2, 0:3]
-    reciprocal_lattice = np.linalg.inv(atom.lattice.lattice)
+    reciprocal_lattice = np.linalg.inv(cell.lattice.lattice)
     for atom in cell.atoms:
         atom.direct_coordinate = atom.Certesian_coordinate @ reciprocal_lattice
     return cell
 
 
-def slap(cell, miller_index=np.ones(3), layer=1, shift=0, vaccum=0):
+def normalize_cell(cell):
+    for atom in cell.atoms:
+        for i in range(0, 3):
+            atom.direct_coordinate[0, i] = atom.direct_coordinate[0, i] - np.floor(atom.direct_coordinate[0, i])
+            atom.Certesian_coordinate = atom.direct_coordinate @ cell.lattice.lattice
+    return cell
+
+
+def slap(cell, miller_index=np.ones(3), layer=1, shift=0, vacuum=0):
     cell = slice(cell, miller_index)
     cell = enlarge(cell, np.array([1, 1, layer]))
-    cell = shift(cell, shift)
-    cell = add_vaccum(cell, vaccum)
+    cell = add_shift(cell, shift)
+    cell = normalize_cell(cell)
+    cell = add_vacuum(cell, vacuum)
     return cell
