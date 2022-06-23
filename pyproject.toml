@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "matenv"
+version = "0.1.0"
+description = "Physical environemnt framework for molecules and cyrstals."
+authors = ["Yaozhenghang Ma <yaozhenghang.ma@gmail.com>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+homepage = "https://github.com/yaozhenghangma/matenv"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/yaozhenghangma/matenv/issues"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
