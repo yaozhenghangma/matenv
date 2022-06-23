@@ -1,0 +1,23 @@
+# Checks that we can build and validate the Unittest
+name: Pull-Request-Checks
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'poetry'
+      - run: poetry install
+      - name: Run test
+        run: |
+          pip3 install pytest-cov
+          poetry run pytest --cov=./ --cov-report=xml
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./coverage.xml
