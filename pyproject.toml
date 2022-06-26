@@ -16,7 +16,8 @@ classifiers = [
 "Bug Tracker" = "https://github.com/yaozhenghangma/matenv/issues"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
+numpy = "^1.23.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
