@@ -23,12 +23,15 @@ class Atom:
         self.symbol = sym
         self.coordinate = np.array(coordinate)
 
+    def __repr__(self):
+        return 'Atom({}\t{})'.format(self.symbol, self.coordinate)
+
 
 class Atoms:
     def __init__(self, *atoms:Atom):
         self.atoms = list(atoms)
         self.__number = len(self.atoms)
-        self.__index = 0
+        self.__index = -1
 
     def __len__(self):
         return self.__number
@@ -37,10 +40,19 @@ class Atoms:
         return self
 
     def __next__(self):
-        if self.__index == self.__number:
+        if self.__index == self.__number-1:
+            self.__index = -1
             raise StopIteration
         self.__index = self.__index + 1
         return self.atoms[self.__index]
+
+    def __repr__(self):
+        string = 'Number of atoms: {}\n'.format(self.__number)
+        i = 1
+        for atom in self:
+            string += 'Atom {}:\t{}\t{}\n'.format(i, atom.symbol, atom.coordinate)
+            i += 1
+        return string
 
 
 class Lattice:
@@ -51,17 +63,20 @@ class Lattice:
             raise ValueError(f'Lattice matrix should be a 3*3 matrix.')
         self.lattice = lattice
 
-    def a(self):
-        return self.lattice[0,0:2]
+    def a(self) -> np.ndarray:
+        return self.lattice[0,0:3]
 
-    def b(self):
-        return self.lattice[1,0:2]
+    def b(self) -> np.ndarray:
+        return self.lattice[1,0:3]
 
-    def c(self):
-        return self.lattice[2,0:2]
+    def c(self) -> np.ndarray:
+        return self.lattice[2,0:3]
 
-    def volume(self):
+    def volume(self) -> int:
         return np.linalg.det(self.lattice)
+
+    def __repr__(self):
+        return 'Lattice: \n{}'.format(self.lattice)
 
 
 class Cell:
@@ -69,5 +84,5 @@ class Cell:
         self.lattice = lattice
         self.atoms = atoms
 
-    def lattice(self):
-        return self.lattice.lattice
+    def __repr__(self):
+        return '{}\n{}'.format(self.lattice, self.atoms)
