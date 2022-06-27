@@ -17,10 +17,7 @@ import numpy as np
 
 
 class Atom:
-    symbol:str = ""
-    coordinate:np.ndarray = np.zeros(3)
-
-    def __init__(self, sym:str, coordinate):
+    def __init__(self, sym:str="", coordinate:np.ndarray=np.zeros(3)):
         if len(coordinate) != 3:
             raise ValueError(f'Input coordinate should be 3 dimensional.')
         self.symbol = sym
@@ -28,13 +25,10 @@ class Atom:
 
 
 class Atoms:
-    atoms:Atom = []
-    __number:int = 0
-    __index:int = 0
-
     def __init__(self, *atoms:Atom):
         self.atoms = list(atoms)
         self.__number = len(self.atoms)
+        self.__index = 0
 
     def __len__(self):
         return self.__number
@@ -50,9 +44,7 @@ class Atoms:
 
 
 class Lattice:
-    lattice:np.ndarray = np.zeros((3, 3))
-
-    def __init__(self, lattice:np.ndarray):
+    def __init__(self, lattice:np.ndarray=np.zeros((3,3))):
         if type(lattice) != np.ndarray:
             raise TypeError(f'Input type should be numpy\'s ndarray.')
         if np.shape(lattice) != (3,3):
@@ -73,10 +65,7 @@ class Lattice:
 
 
 class Cell:
-    lattice:Lattice = Lattice()
-    atoms:Atoms = Atoms()
-
-    def __init__(self, lattice:Lattice, atoms:Atoms):
+    def __init__(self, lattice:Lattice=Lattice(), atoms:Atoms=Atoms()):
         self.lattice = lattice
         self.atoms = atoms
 

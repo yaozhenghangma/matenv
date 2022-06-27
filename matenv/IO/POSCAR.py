@@ -1,6 +1,5 @@
 import copy
 import numpy as np
-from atom import *
 
 
 def read_POSCAR(file_name):
