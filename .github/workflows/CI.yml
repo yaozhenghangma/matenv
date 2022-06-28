@@ -15,6 +15,7 @@ jobs:
           pip3 install pybind11
           pip3 install pytest
           pip3 install pytest-cov
+          pip3 install numpy
       - name: Run test
         run: |
           python3 setup.py build
