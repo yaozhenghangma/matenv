@@ -13,5 +13,6 @@ profile = "black"
 
 [tool.pytest.ini_options]
 pythonpath = [
-  "_skbuild/macosx-10.16-x86_64-3.8/cmake-install/src"
+  "_skbuild/macosx-10.16-x86_64-3.8/cmake-install/src",
+  "_skbuild/linux-x86_64-3.9/setuptools/lib/"
 ]
