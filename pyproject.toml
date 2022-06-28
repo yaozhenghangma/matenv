@@ -1,28 +1,17 @@
-[tool.poetry]
-name = "matenv"
-version = "0.1.0"
-description = "Physical environemnt framework for molecules and cyrstals."
-authors = ["Yaozhenghang Ma <yaozhenghang.ma@gmail.com>"]
-license = "GPL-3.0-or-later"
-readme = "README.md"
-homepage = "https://github.com/yaozhenghangma/matenv"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Operating System :: OS Independent",
+[build-system]
+requires = [
+    "setuptools>=42",
+    "pybind11>=2.9.2",
+    "cmake>=3.13",
+    "scikit-build>=0.14.1",
 ]
 
-[tool.poetry.urls]
-"Bug Tracker" = "https://github.com/yaozhenghangma/matenv/issues"
+build-backend = "setuptools.build_meta"
 
-[tool.poetry.dependencies]
-python = "^3.8"
-numpy = "^1.23.0"
+[tool.isort]
+profile = "black"
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.1.2"
-pytest-cov = "^3.0.0"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.pytest.ini_options]
+pythonpath = [
+  "_skbuild/macosx-10.16-x86_64-3.8/cmake-install/src"
+]

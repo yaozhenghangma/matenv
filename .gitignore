@@ -128,3 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 matter_tools/.DS_Store
+
+# Build files
+_skbuild
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+Makefile

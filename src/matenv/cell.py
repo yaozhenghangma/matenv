@@ -17,10 +17,10 @@ import numpy as np
 
 
 class Atom:
-    def __init__(self, sym:str="", coordinate:np.ndarray=np.zeros(3)):
+    def __init__(self, symbol:str="", coordinate:np.ndarray=np.zeros(3)):
         if len(coordinate) != 3:
             raise ValueError(f'Input coordinate should be 3 dimensional.')
-        self.symbol = sym
+        self.symbol = symbol
         self.coordinate = np.array(coordinate)
 
     def __repr__(self):
