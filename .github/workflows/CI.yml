@@ -12,6 +12,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip3 install scikit-build
+          pip3 install pybind11
           pip3 install pytest
           pip3 install pytest-cov
       - name: Run test
