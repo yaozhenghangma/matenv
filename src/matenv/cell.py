@@ -14,6 +14,7 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
+from matenv import c_cell
 
 
 class Atom:
@@ -86,3 +87,32 @@ class Cell:
 
     def __repr__(self):
         return '{}\n{}'.format(self.lattice, self.atoms)
+
+
+def atom_conversion(atom:Atom) -> c_cell.Atom:
+    c_atom = c_cell.Atom()
+    c_atom.symbol = atom.symbol
+    c_atom.coordinate = list(atom.coordinate)
+    return c_atom
+
+
+def atoms_conversion(atoms:Atoms) -> c_cell.Atoms:
+    c_atoms = c_cell.Atoms()
+    atoms_list = []
+    for atom in atoms:
+        atoms_list.append(atom_conversion(atom))
+    c_atoms.atoms = atoms_list
+    return c_atoms
+
+
+def lattice_conversion(lattice:Lattice) -> c_cell.Lattice:
+    c_lattice = c_cell.Lattice()
+    c_lattice.lattice = [list(lattice.a()), list(lattice.b()), list(lattice.c())]
+    return c_lattice
+
+
+def cell_conversion(cell:Cell) -> c_cell.Cell:
+    ctype_cell = c_cell.Cell()
+    ctype_cell.lattice = lattice_conversion(cell.lattice)
+    ctype_cell.atoms = atoms_conversion(cell.atoms)
+    return ctype_cell
