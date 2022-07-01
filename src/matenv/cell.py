@@ -116,3 +116,14 @@ def cell_conversion(cell:Cell) -> c_cell.Cell:
     ctype_cell.lattice = lattice_conversion(cell.lattice)
     ctype_cell.atoms = atoms_conversion(cell.atoms)
     return ctype_cell
+
+def enlarge(nx:int, ny:int, nz:int, cell) -> c_cell.SuperCell:
+    if type(cell) == Cell:
+        ctype_cell = cell_conversion(cell)
+    elif type(cell) == c_cell.Cell:
+        ctype_cell = cell
+    else :
+        raise TypeError("Input must be Cell type of python or c++.")
+
+    supercell = c_cell.SuperCell(nx, ny, nz, ctype_cell)
+    return supercell

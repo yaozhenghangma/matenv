@@ -135,6 +135,20 @@ PYBIND11_MODULE(c_cell, m) {
         .def_readwrite("lattice", &Cell::lattice)
         .def_readwrite("atoms", &Cell::atoms)
         .def(py::init<>());
+    py::class_<Index>(m, "Index")
+        .def_readwrite("ix", &Index::ix)
+        .def_readwrite("iy", &Index::iy)
+        .def_readwrite("iz", &Index::iz)
+        .def_readwrite("atom_index", &Index::atom_index)
+        .def(py::init<std::vector<int>>());
+    py::class_<SuperCell>(m, "SuperCell")
+        .def_readwrite("lattice", &SuperCell::lattice)
+        .def_readwrite("atoms", &SuperCell::atoms)
+        .def(py::init<int, int, int, Cell>())
+        .def("shape", &SuperCell::shape)
+        .def("coordinate", &SuperCell::coordinate)
+        .def("displacement", &SuperCell::displacement)
+        .def("distance", &SuperCell::distance);
 }
 
 #endif
