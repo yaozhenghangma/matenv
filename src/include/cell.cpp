@@ -64,12 +64,14 @@ Index::Index(std::vector<int> index) {
 
 class PYBIND11_EXPORT SuperCell {
     private:
+    std::vector<std::vector<std::vector<std::vector<Atom>>>> atoms;
+
+    protected:
     int nx=0, ny=0, nz=0;
     int atoms_per_cell = 0;
 
     public:
     Lattice lattice;
-    std::vector<std::vector<std::vector<std::vector<Atom>>>> atoms;
 
     SuperCell(int nx, int ny, int nz, Cell cell);
 
@@ -143,7 +145,6 @@ PYBIND11_MODULE(c_cell, m) {
         .def(py::init<std::vector<int>>());
     py::class_<SuperCell>(m, "SuperCell")
         .def_readwrite("lattice", &SuperCell::lattice)
-        .def_readwrite("atoms", &SuperCell::atoms)
         .def(py::init<int, int, int, Cell>())
         .def("shape", &SuperCell::shape)
         .def("coordinate", &SuperCell::coordinate)
