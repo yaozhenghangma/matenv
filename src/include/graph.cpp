@@ -16,5 +16,41 @@
 #define GRAPH
 
 #include <vector>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+class PYBIND11_EXPORT Edge {
+};
+
+class PYBIND11_EXPORT Vertex{
+    public:
+    std::vector<Edge *> edges;
+};
+
+class PYBIND11_EXPORT DirectedEdge : public Edge {
+    public:
+    Vertex * vertex;
+};
+
+class PYBIND11_EXPORT UndirectedEdge : public Edge {
+    public:
+    Vertex * vertex1;
+    Vertex * vertex2;
+};
+
+class PYBIND11_EXPORT Graph {
+};
+
+class PYBIND11_EXPORT DirectedGraph : public Graph {
+    public:
+    std::vector<DirectedEdge> edges;
+    std::vector<Vertex> vertexes;
+};
+
+class PYBIND11_EXPORT UndirectedGraph : public Graph {
+    public:
+    std::vector<UndirectedEdge> edges;
+    std::vector<Vertex> vertexes;
+};
 
 #endif

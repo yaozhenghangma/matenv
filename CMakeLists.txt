@@ -19,6 +19,8 @@ find_package(pybind11 CONFIG REQUIRED)
 
 # target
 pybind11_add_module(c_cell src/include/cell.cpp)
+pybind11_add_module(c_graph src/include/graph.cpp)
 
 target_compile_definitions(c_cell PRIVATE VERSION_INFO=${PROJECT_VERSION_INFO})
 install(TARGETS c_cell DESTINATION .)
+install(TARGETS c_graph DESTINATION .)
