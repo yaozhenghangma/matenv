@@ -52,6 +52,7 @@ jobs:
   upload:
     name: Upload to PyPI
     needs: [build, test]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
         with:
