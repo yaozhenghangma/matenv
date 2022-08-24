@@ -81,6 +81,8 @@ class Lattice:
 
 
 class Cell:
+    symbols = []
+    numbers = []
     def __init__(self, lattice:Lattice=Lattice(), atoms:Atoms=Atoms()):
         self.lattice = lattice
         self.atoms = atoms
