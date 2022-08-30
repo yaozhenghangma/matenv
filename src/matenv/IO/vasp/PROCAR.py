@@ -83,4 +83,5 @@ def load_PROCAR(file_name:str = "PROCAR", noncollinear=False):
         kpoints, bands, number_ions = allocate_space(input)
         bands = read_weight(input, kpoints, bands, number_ions)
 
-    return bands
+    input.close()
+    return bands, kpoints

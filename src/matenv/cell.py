@@ -55,6 +55,10 @@ class Atoms:
             i += 1
         return string
 
+    def append(self, atom:Atom):
+        self.atoms.append(atom)
+        self.__number += 1
+
 
 class Lattice:
     def __init__(self, lattice:np.ndarray=np.zeros((3,3))):
