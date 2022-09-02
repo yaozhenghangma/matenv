@@ -16,6 +16,7 @@
 from matenv import KPoint
 from matenv import KPath
 from matenv import Band
+from matenv import Lattice
 import numpy as np
 import copy
 import re
@@ -41,9 +42,10 @@ def allocate_space(input):
     return kpoints, bands, number_ions
 
 
-def read_weight(input, kpoints, bands, number_ions):
+def read_weight(input, kpoints, bands, number_ions, lattice):
     pattern = '[0-9]-[0-9]'     #pattern for negative coordinate value of k points
     kpath = KPath(np.zeros_like(kpoints, dtype=np.float64))
+    reciprocal_lattice = np.linalg.inv(lattice.lattice).T * 2 * np.pi
     for i in range(0, len(kpoints)):
         input.readline()    #blank line
         line = input.readline().strip()
@@ -51,9 +53,8 @@ def read_weight(input, kpoints, bands, number_ions):
             position = re.search(pattern, line).span()
             line = line[0:position[0]+1] + " " + line[position[0]+1:]
         split_line = line.split()
-        kpoints[i].coordinate[0] = float(split_line[3])
-        kpoints[i].coordinate[1] = float(split_line[4])
-        kpoints[i].coordinate[2] = float(split_line[5])
+        direct_coordinate = np.array([float(split_line[3]), float(split_line[4]), float(split_line[5])])
+        kpoints[i].coordinate = np.matmul(direct_coordinate, reciprocal_lattice)
         kpoints[i].weight = float(split_line[8])
         if i == 0:
             kpath.distance[i] = 0
@@ -75,13 +76,13 @@ def read_weight(input, kpoints, bands, number_ions):
     return bands
 
 
-def load_PROCAR(file_name:str = "PROCAR", noncollinear=False):
+def load_PROCAR(file_name:str = "PROCAR", noncollinear=False, lattice:Lattice=Lattice()):
     input = open(file_name, 'r')
     split_line = input.readline().strip().split()   # comment line, with phase or not
 
     if noncollinear:
         kpoints, bands, number_ions = allocate_space(input)
-        bands = read_weight(input, kpoints, bands, number_ions)
+        bands = read_weight(input, kpoints, bands, number_ions, lattice)
 
     input.close()
     return bands, kpoints
