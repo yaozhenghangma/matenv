@@ -60,12 +60,12 @@ def load_band(file_name:str="band.dat"):
             kpath.distance[i] = np.linalg.norm(kpoints[i].coordinate - kpoints[i-1].coordinate) + kpath.distance[i-1]
         band_number = 0
         for _ in range(0, number_loops):
-            j = 0
             split_line = input.readline().strip().split()
-            while band_number < len(bands):
+            for j in range(0, 10):
                 bands[band_number].energies[i] = float(split_line[j])
-                j += 1
                 band_number += 1
+                if band_number >= len(bands):
+                    break
 
     for band in bands:
         band.kpath = kpath
