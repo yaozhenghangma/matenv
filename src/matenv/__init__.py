@@ -25,6 +25,6 @@ __version__ = '0.0.1'
 
 from matenv.cell import *
 from matenv.kpoint import *
-from matenv.band import *
+from matenv.dispersion import *
 from matenv.IO.vasp.PROCAR import load_PROCAR
-import matenv.c_cell
+#import matenv.c_cell
