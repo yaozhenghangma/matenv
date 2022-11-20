@@ -41,3 +41,4 @@ class DOS:
 class Projection:
     def __init__(self, number_kpoints:int=0, number_bands:int=0, number_ions:int=0, number_orbitals:int=0, number_directions:int=0):
         self.projection = np.zeros((number_kpoints, number_bands, number_ions, number_orbitals, number_directions), dtype=np.complex128)
+        self.kpoints = Dispersion(number_kpoints, number_bands)

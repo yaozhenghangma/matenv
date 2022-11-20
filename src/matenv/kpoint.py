@@ -28,3 +28,10 @@ class KPoint:
 class KPath:
     def __init__(self, distance:np.ndarray=np.array([])):
         self.distance = distance
+
+def convert_kpath(kpoints:np.ndarray, bravais_lattice:np.ndarray):
+    reciprocal_lattice = 2*np.pi*np.linalg.inv(bravais_lattice).transpose()
+    distance = [0.0,]
+    for i in range(1, len(kpoints)):
+        distance.append(np.matmul(kpoints[i].coordinate-kpoints[i-1].coordinate, reciprocal_lattice) + distance[i-1])
+    return KPath(np.array(distance))
