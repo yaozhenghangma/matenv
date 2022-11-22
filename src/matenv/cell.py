@@ -80,6 +80,9 @@ class Lattice:
     def volume(self) -> int:
         return np.linalg.det(self.lattice)
 
+    def reciprocal(self) -> np.ndarray:
+        return 2*np.pi*np.linalg.inv(self.lattice).transpose()
+
     def __repr__(self):
         return 'Lattice: \n{}'.format(self.lattice)
 

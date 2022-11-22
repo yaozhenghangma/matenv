@@ -15,6 +15,8 @@
 
 from matenv import KPoint
 from matenv import KPath
+from matenv import Dispersion
+from matenv import Projection
 from matenv import Band
 from matenv import Lattice
 import numpy as np
@@ -27,26 +29,15 @@ def allocate_space(input):
     number_bands = int(split_line[7])
     number_ions = int(split_line[11])
 
-    kpoints = []
-    bands = []
+    projection = Projection(number_kpoints, number_bands, number_ions, 9, 4)
 
-    for _ in range(0, number_kpoints):
-        kpoints.append(copy.deepcopy(KPoint()))
-
-    kpoints = np.array(kpoints)
-    kpath = KPath(np.zeros_like(kpoints, dtype=np.float64))
-    energies = np.zeros_like(kpoints, dtype=np.float64)
-    for _ in range(0, number_bands):
-        bands.append(copy.deepcopy(Band(kpath, energies)))
-
-    return kpoints, bands, number_ions
+    return projection
 
 
-def read_weight(input, kpoints, bands, number_ions, lattice):
+def read_weight(input, phase):
+    projection = allocate_space(input)
     pattern = '[0-9]-[0-9]'     #pattern for negative coordinate value of k points
-    kpath = KPath(np.zeros_like(kpoints, dtype=np.float64))
-    reciprocal_lattice = np.linalg.inv(lattice.lattice).T * 2 * np.pi
-    for i in range(0, len(kpoints)):
+    for i in range(0, projection.number_kpoints):
         input.readline()    #blank line
         line = input.readline().strip()
         while re.search(pattern, line):
@@ -54,35 +45,42 @@ def read_weight(input, kpoints, bands, number_ions, lattice):
             line = line[0:position[0]+1] + " " + line[position[0]+1:]
         split_line = line.split()
         direct_coordinate = np.array([float(split_line[3]), float(split_line[4]), float(split_line[5])])
-        kpoints[i].coordinate = np.matmul(direct_coordinate, reciprocal_lattice)
-        kpoints[i].weight = float(split_line[8])
-        if i == 0:
-            kpath.distance[i] = 0
-        else :
-            kpath.distance[i] = np.linalg.norm(kpoints[i].coordinate - kpoints[i-1].coordinate) + kpath.distance[i-1]
-        for j in range(0, len(bands)):
+        projection.dispersion.kpoints[i].coordinate = copy.deepcopy(direct_coordinate)
+        projection.dispersion.kpoints[i].weight = float(split_line[8])
+        for j in range(0, projection.number_bands):
             input.readline()    #blank line
             split_line = input.readline().strip().split()
-            bands[j].energies[i] = float(split_line[4])
+            projection.dispersion.energies[j, i] = float(split_line[4])
             input.readline()    #blank line
             input.readline()    #comment line
-            for _ in range(0, 4*(number_ions+1)):
-                input.readline()
+            for k in range(0, projection.number_directions):
+                for l in range(0, projection.number_ions):
+                    split_line = input.readline().strip().split()
+                    for m in range(0, projection.number_orbitals):
+                        projection.projection_square[i, j, l, m, k] = float(split_line[m+1])
+                input.readline()    #tot projection line
+            if phase:
+                input.readline()    #comment line
+                for l in range(0, projection.number_ions):
+                    split_line = input.readline().strip().split()
+                    for m in range(0, projection.number_orbitals):
+                        projection.projection[i, j, l, m] = complex(float(split_line[2*m+1]), float(split_line[2*m+2]))
+                input.readline()    #charge line
         input.readline()    #blank line
 
-    for band in bands:
-        band.kpath = kpath
-
-    return bands
+    return projection
 
 
-def load_PROCAR(file_name:str = "PROCAR", noncollinear=False, lattice:Lattice=Lattice()):
+def load_PROCAR(file_name:str = "PROCAR", noncollinear=False):
     input = open(file_name, 'r')
     split_line = input.readline().strip().split()   # comment line, with phase or not
+    if 'phase' in split_line:
+        phase = True
+    else:
+        phase = False
 
     if noncollinear:
-        kpoints, bands, number_ions = allocate_space(input)
-        bands = read_weight(input, kpoints, bands, number_ions, lattice)
+        projection = read_weight(input, phase)
 
     input.close()
-    return bands, kpoints
+    return projection
