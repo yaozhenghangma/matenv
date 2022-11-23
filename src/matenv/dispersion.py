@@ -32,11 +32,9 @@ class Band:
         self.energies = energies
 
 class DOS:
-    def __init__(self, energies:np.ndarray=np.array([]), dos:np.ndarray=np.array([])):
-        if len(energies) != len(dos):
-            raise ValueError(f'The number of points should match.')
-        self.energies = energies
-        self.dos = dos
+    def __init__(self, number_energy:int=0):
+        self.energies = np.zeros(number_energy)
+        self.dos = np.zeros(number_energy)
 
 class Projection:
     def __init__(self, number_kpoints:int=0, number_bands:int=0, number_ions:int=0, number_orbitals:int=0, number_directions:int=0):

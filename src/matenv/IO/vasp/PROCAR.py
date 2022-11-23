@@ -13,12 +13,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from matenv import KPoint
-from matenv import KPath
-from matenv import Dispersion
 from matenv import Projection
-from matenv import Band
-from matenv import Lattice
 import numpy as np
 import copy
 import re
