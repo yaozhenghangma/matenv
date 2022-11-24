@@ -23,28 +23,61 @@ def gaussian(x:float, x0:float, sigma:float=0.05):
 def lorentz(x:float, x0:float, gamma:float=0.03):
     return gamma / np.pi / ((x-x0)**2 + gamma**2)
 
-def generate_dos(projection:Projection, distribution:function=gaussian, number_energy:int=3000):
+def generate_dos(projection:Projection, distribution=gaussian, number_energy:int=3000):
     dos = DOS(number_energy)
     dos.energies = np.linspace(np.min(projection.dispersion.energies), np.max(projection.dispersion.energies), number_energy)
-    dos.dos = []
-    for energy in dos.energies:
-        dos_value = 0
-        for i in range(0, projection.dispersion.energies.shape[0]):
-            for j in range(0, projection.dispersion.energies.shape[1]):
-                dos_value += distribution(energy, projection.dispersion.energies[i, j]) * projection.dispersion.kpoints[j].weight
-        dos.dos.append(dos_value)
-    dos.dos = np.array(dos.dos)
+    dos.dos = np.zeros_like(dos.energies)
+    for i in range(0, projection.dispersion.energies.shape[0]):
+        for j in range(0, projection.dispersion.energies.shape[1]):
+            dos.dos += distribution(dos.energies, projection.dispersion.energies[i, j]) * projection.dispersion.kpoints[j].weight
     return dos
 
-def generate_pdos(projection:Projection, ions, orbitals, distribution, number_energy:int=3000):
+def generate_pdos(projection:Projection, ions, orbitals, distribution=gaussian, number_energy:int=3000):
     dos = DOS(number_energy)
     dos.energies = np.linspace(np.min(projection.dispersion.energies), np.max(projection.dispersion.energies), number_energy)
-    dos.dos = []
-    for energy in dos.energies:
-        dos_value = 0
-        for i in range(0, projection.dispersion.energies.shape[0]):
-            for j in range(0, projection.dispersion.energies.shape[1]):
-                dos_value += distribution(energy, projection.dispersion.energies[i, j]) * projection.dispersion.kpoints[j].weight
-        dos.dos.append(dos_value)
-    dos.dos = np.array(dos.dos)
+    dos.dos = np.zeros_like(dos.energies)
+    for i in range(0, projection.dispersion.energies.shape[0]):
+        for j in range(0, projection.dispersion.energies.shape[1]):
+            dos.dos += distribution(dos.energies, projection.dispersion.energies[i, j]) * projection.dispersion.kpoints[j].weight \
+                * np.sum(projection.projection_square[j, i, ions, orbitals, 0])
     return dos
+
+def distinguish_spin(projection:Projection, axis:int=3, phase=False):
+    projection_up = Projection(projection.number_kpoints, 0, projection.number_ions, projection.number_orbitals, 1)
+    projection_dn = Projection(projection.number_kpoints, 0, projection.number_ions, projection.number_orbitals, 1)
+    projection_up.dispersion.kpoints = projection.dispersion.kpoints
+    projection_dn.dispersion.kpoints = projection.dispersion.kpoints
+    projection_square = projection.projection_square.transpose(1,0,2,3,4)
+    projection_up.projection_square = projection_up.projection_square.transpose(1,0,2,3,4)
+    projection_dn.projection_square = projection_up.projection_square.transpose(1,0,2,3,4)
+    if phase:
+        projection_phase = projection.projection.transpose(1,0,2,3)
+        projection_up.projection = projection_up.projection.transpose(1,0,2,3)
+        projection_dn.projection = projection_dn.projection.transpose(1,0,2,3)
+    for i in range(0, projection.number_bands):
+        if np.sum(projection_square[i, :, :, :, axis]) >= 0:
+            projection_up.number_bands += 1
+            projection_up.projection_square = np.insert(projection_up.projection_square, 0, values=projection_square[i, :, :, :, 0:1], axis=0)
+            projection_up.dispersion.energies = np.insert(projection_up.dispersion.energies, 0, projection.dispersion.energies[i, :], axis=0)
+            if phase:
+                projection_up.projection = np.insert(projection_up.projection, 0, values=projection_phase[i, :, :, :], axis=0)
+        else:
+            projection_dn.number_bands += 1
+            projection_dn.projection_square = np.insert(projection_dn.projection_square, 0, values=projection_square[i, :, :, :, 0:1], axis=0)
+            projection_dn.dispersion.energies = np.insert(projection_dn.dispersion.energies, 0, projection.dispersion.energies[i, :], axis=0)
+            if phase:
+                projection_dn.projection = np.insert(projection_dn.projection, 0, values=projection_phase[i, :, :, :], axis=0)
+
+    projection_up.projection_square = np.flip(projection_up.projection_square, 0)
+    projection_up.dispersion.energies = np.flip(projection_up.dispersion.energies, 0)
+    projection_dn.projection_square = np.flip(projection_dn.projection_square, 0)
+    projection_dn.dispersion.energies = np.flip(projection_dn.dispersion.energies, 0)
+    projection_up.projection_square = projection_up.projection_square.transpose(1,0,2,3,4)
+    projection_dn.projection_square = projection_dn.projection_square.transpose(1,0,2,3,4)
+    if phase:
+        projection_up.projection = np.flip(projection_up.projection, 0)
+        projection_dn.projection = np.flip(projection_dn.projection, 0)
+        projection_up.projection = projection_up.projection.transpose(1,0,2,3)
+        projection_dn.projection = projection_dn.projection.transpose(1,0,2,3)
+
+    return projection_up, projection_dn

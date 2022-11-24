@@ -20,7 +20,7 @@ import numpy as np
 class Dispersion:
     def __init__(self, number_kpoints:int=0, number_bands:int=0):
         self.kpoints = np.ndarray(number_kpoints, KPoint)
-        self.energies = np.zeros(number_bands, number_kpoints)
+        self.energies = np.zeros((number_bands, number_kpoints))
         for i in range(0, number_kpoints):
             self.kpoints[i] = KPoint()
 
