@@ -81,3 +81,11 @@ def distinguish_spin(projection:Projection, axis:int=3, phase=False):
         projection_dn.projection = projection_dn.projection.transpose(1,0,2,3)
 
     return projection_up, projection_dn
+
+def transform(projection:Projection, matrix:np.ndarray=np.eye(5, dtype=np.complex128)):
+    for i in range(0, projection.number_kpoints):
+        for j in range(0, projection.number_bands):
+            for k in range(0, projection.number_ions):
+                projection.projection[i, j, k, 4:9] = np.matmul(matrix, projection[i, j, k, 4:9])
+                projection.projection_square[i, j, k, 4:9, 0] = np.abs(projection.projection[i, j, k, 4:9])
+    return projection
